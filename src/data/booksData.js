@@ -58,9 +58,7 @@ export const fictionBooks = addMeta("Fiction", [
   { src: "https://m.media-amazon.com/images/I/81o5KhNUi3L.AC_SX500.jpg", 
     title: "The Vegetarian",
     images: [
-      "https://m.media-amazon.com/images/I/81o5KhNUi3L.AC_SX500.jpg",
       "https://m.media-amazon.com/images/I/81rDfiyjCLL.AC_SX500.jpg",
-      "https://m.media-amazon.com/images/I/81HtsXDNLpL.AC_SX500.jpg",
     ],
     author: " Han Kang ",
     publisher: "HarperCollins",

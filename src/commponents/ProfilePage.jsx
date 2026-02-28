@@ -84,7 +84,7 @@ const ProfilePage = () => {
                           />
                         </div>
                       </Link>
-                      <div className="flex-1 sm:mt-3">
+                      <div className="flex-1 sm:mt-3 ml-5 mt-2">
                         <Link
                           to={`/book/${book.id}`}
                           state={{ book, from: location.pathname }}

@@ -10,9 +10,7 @@ const BookDetailsPage = () => {
   const backPath = location.state?.from || "/";
   const [isAdded, setIsAdded] = useState(false);
   const defaultImages = [
-    "https://m.media-amazon.com/images/I/71xE88oCtJL._AC_UY436_QL65_.jpg",
-    "https://m.media-amazon.com/images/I/61mC-xKeQ1L._SY522_.jpg",
-    "https://m.media-amazon.com/images/I/71T5tiOdCSL.AC_SX500.jpg",
+    
   ];
   const imageOptions = book
     ? [
@@ -102,7 +100,7 @@ const BookDetailsPage = () => {
             </div>
 
             {book.description && <p className="mt-4 text-gray-600">{book.description}</p>}
-            <div className="mt-6 flex gap-3">
+            <div className="mt-6 flex gap-3 mb-4">
               <button
                 type="button"
                 onClick={handleAddToCart}
