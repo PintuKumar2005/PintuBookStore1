@@ -1,70 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Contact = () => {
-  return (
-    <section className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-12">
-      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-5xl grid md:grid-cols-2 overflow-hidden">
-        
-        {/* Left Side Info */}
-        <div className="bg-indigo-600 text-white p-10 flex flex-col justify-center">
-          <h2 className="text-3xl font-bold mb-4">Get in Touch 📚</h2>
-          <p className="mb-6 text-indigo-100">
-            Have questions about books, orders, or recommendations?
-            We'd love to hear from you!
-          </p>
-
-          <div className="space-y-4">
-            <p>📍 Bhopal, India</p>
-            <p>📞 +91 6206758647</p>
-            <p>📧 support@bookstore.com</p>
-          </div>
-        </div>
-
-        {/* Right Side Form */}
-        <div className="p-8 md:p-10">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-            Contact Form
-          </h2>
-
-          <form className="space-y-5">
-            <div>
-              <label className="block mb-1 text-gray-600">Full Name</label>
-              <input
-                type="text"
-                placeholder="Enter your name"
-                className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1 text-gray-600">Email Address</label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1 text-gray-600">Message</label>
-              <textarea
-                rows="4"
-                placeholder="Write your message..."
-                className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              ></textarea>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300"
-            >
-              Send Message
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
+  const [form, setForm] = useState({ name: "", email: "", message: "" }); const [sent, setSent] = useState(false);
+  const submit = (event) => { event.preventDefault(); setSent(true); setForm({ name: "", email: "", message: "" }); };
+  return <main className="min-h-screen bg-[#f7f6f2] px-4 py-12 sm:px-6"><div className="mx-auto grid max-w-5xl overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/60 md:grid-cols-[0.85fr_1.15fr]"><section className="bg-slate-900 p-8 text-white sm:p-10"><p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-400">We’re here to help</p><h1 className="mt-3 text-4xl font-black">Let’s talk books.</h1><p className="mt-4 leading-7 text-slate-400">Questions about a title, an order, or what to read next? Send us a note.</p><div className="mt-10 space-y-5 text-sm"><p><span className="block text-xs font-bold uppercase tracking-wider text-slate-500">Visit</span><span className="mt-1 block">Bhopal, Madhya Pradesh, India</span></p><p><span className="block text-xs font-bold uppercase tracking-wider text-slate-500">Call</span><a href="tel:+916206758647" className="mt-1 block hover:text-orange-400">+91 62067 58647</a></p><p><span className="block text-xs font-bold uppercase tracking-wider text-slate-500">Email</span><a href="mailto:support@bookstore.com" className="mt-1 block hover:text-orange-400">support@bookstore.com</a></p></div></section><section className="p-6 sm:p-10"><h2 className="text-2xl font-black text-slate-900">Send a message</h2><p className="mt-2 text-sm text-slate-500">We usually respond within one business day.</p>{sent ? <div role="status" className="mt-6 rounded-xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">Thanks! Your message has been received.</div> : null}<form onSubmit={submit} className="mt-6 space-y-4">{[["name", "Full name", "text"], ["email", "Email address", "email"]].map(([name, label, type]) => <div key={name}><label htmlFor={`contact-${name}`} className="mb-1.5 block text-sm font-bold text-slate-700">{label}</label><input id={`contact-${name}`} type={type} required value={form[name]} onChange={(e) => { setForm((current) => ({ ...current, [name]: e.target.value })); setSent(false); }} className="w-full rounded-xl border border-slate-200 px-3.5 py-3 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"/></div>)}<div><label htmlFor="contact-message" className="mb-1.5 block text-sm font-bold text-slate-700">Message</label><textarea id="contact-message" required minLength={10} rows="5" value={form.message} onChange={(e) => { setForm((current) => ({ ...current, message: e.target.value })); setSent(false); }} className="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"/></div><button type="submit" className="rounded-full bg-orange-500 px-6 py-3 text-sm font-bold text-white hover:bg-orange-600">Send message</button></form></section></div></main>;
 };
-
 export default Contact;

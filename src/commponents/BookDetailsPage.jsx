@@ -1,122 +1,53 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { allBooks } from "../data/booksData";
+
+const readCart = () => { try { return JSON.parse(localStorage.getItem("bookStoreCart") || "[]"); } catch { return []; } };
 
 const BookDetailsPage = () => {
   const { bookId } = useParams();
   const location = useLocation();
-  const bookFromState = location.state?.book;
-  const book = bookFromState || allBooks.find((item) => item.id === bookId);
+  const book = location.state?.book || allBooks.find((item) => String(item.id) === String(bookId));
   const backPath = location.state?.from || "/";
-  const [isAdded, setIsAdded] = useState(false);
-  const defaultImages = [
-    
-  ];
-  const imageOptions = book
-    ? [
-        ...(Array.isArray(book.images) ? book.images : [book.src || book.cover]).filter(Boolean),
-        ...defaultImages,
-      ].slice(0, 3)
-    : defaultImages;
-  const [selectedImage, setSelectedImage] = useState(imageOptions[0]);
-
-  useEffect(() => {
-    if (!book) return;
-    const cart = JSON.parse(localStorage.getItem("bookStoreCart") || "[]");
-    setIsAdded(cart.some((item) => item.id === book.id));
-  }, [book]);
-
-  useEffect(() => {
-    setSelectedImage(imageOptions[0]);
-  }, [bookId]);
+  const images = book ? [...new Set([...(book.images || []), book.src || book.cover].filter(Boolean))].slice(0, 4) : [];
+  const [selectedImage, setSelectedImage] = useState(images[0]);
+  const [isAdded, setIsAdded] = useState(() => book ? readCart().some((item) => item.id === book.id) : false);
 
   const handleAddToCart = () => {
-    if (!book) return;
-    const cart = JSON.parse(localStorage.getItem("bookStoreCart") || "[]");
-    if (!cart.some((item) => item.id === book.id)) {
-      cart.push(book);
-      localStorage.setItem("bookStoreCart", JSON.stringify(cart));
-    }
+    if (!book || isAdded) return;
+    const cart = readCart();
+    localStorage.setItem("bookStoreCart", JSON.stringify([...cart, book]));
     setIsAdded(true);
+    window.dispatchEvent(new Event("cartChange"));
   };
 
-  if (!book) {
-    return (
-      <div className="px-4 py-8 sm:px-6 lg:px-10">
-        <div className="rounded-lg bg-gray-100 p-6 text-center">
-          <p className="text-lg font-semibold text-gray-700">Book details not available.</p>
-          <Link to={backPath} className="mt-4 inline-block rounded bg-orange-500 px-4 py-2 text-white">
-            Go Back
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (!book) return <main className="min-h-[70vh] bg-[#f7f6f2] px-4 py-16"><div className="mx-auto max-w-xl rounded-3xl bg-white p-10 text-center shadow-sm"><h1 className="text-2xl font-black">Book not found</h1><p className="mt-2 text-slate-500">This title may no longer be available.</p><Link to={backPath} className="mt-6 inline-block rounded-full bg-orange-500 px-5 py-2.5 font-bold text-white">Return to books</Link></div></main>;
+
+  const details = [["Author", book.author], ["Publisher", book.publisher], ["Language", book.language], ["Format", book.format], ["Pages", book.pages], ["Edition", book.edition], ["ISBN", book.isbn]].filter(([, value]) => value);
 
   return (
-    <div className="px-4 py-8 sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-4xl h-120 rounded-lg bg-gray-100 p-6 shadow-sm">
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="mx-auto h-80 w-56 rounded-md bg-gray-200 p-2">
-            <div className="h-full w-full overflow-hidden rounded-md">
-              <img
-                src={selectedImage}
-                alt={book.title}
-                className="h-full w-full rounded-md object-cover transition-transform duration-300 ease-out hover:scale-110"
-              />
+    <main className="min-h-screen bg-[#f7f6f2] px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <div className="mx-auto max-w-6xl"><Link to={backPath} className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-orange-600">← Back to collection</Link>
+        <div className="grid overflow-hidden rounded-3xl border border-slate-200/70 bg-white shadow-xl shadow-slate-200/50 lg:grid-cols-2">
+          <div className="bg-[#eeece6] p-6 sm:p-10">
+            <div className="mx-auto flex max-w-md flex-col-reverse gap-4 sm:flex-row">
+              {images.length > 1 ? <div className="flex gap-3 sm:flex-col">{images.map((image, index) => <button key={image} type="button" onClick={() => setSelectedImage(image)} aria-label={`View image ${index + 1}`} className={`h-20 w-14 overflow-hidden rounded-lg bg-white p-1 transition ${selectedImage === image ? "ring-2 ring-orange-500 ring-offset-2" : "opacity-70 hover:opacity-100"}`}><img src={image} alt="" className="h-full w-full object-contain"/></button>)}</div> : null}
+              <div className="flex min-h-96 flex-1 items-center justify-center rounded-2xl bg-white/60 p-7"><img src={selectedImage} alt={book.title} className="max-h-[470px] w-full object-contain drop-shadow-2xl" /></div>
             </div>
-
-            {/*  for change images */}
-            <div className="mt-6 grid grid-cols-3 gap-3 rounded-md bg-gray-100 p-3 sm:grid-cols-3">
-              {imageOptions.map((image, index) => (
-                <button
-                  key={`${book.id}-${index}`}
-                  type="button"
-                  onClick={() => setSelectedImage(image)}
-                  className={`h-16 overflow-hidden rounded border text-sm font-semibold ${
-                    selectedImage === image ? "border-orange-500 ring-2 ring-orange-300" : "border-black"
-                  }`}
-                >
-                  <img src={image} alt={`${book.title} preview ${index + 1}`} className="h-full w-full object-cover" />
-                </button>
-              ))}
-            </div>
-
-
           </div>
-
-          <div className="mt-35 sm:mt-5 md:mt-2">
-            <p className="text-sm font-medium text-orange-600">{book.category}</p>
-            <h1 className="mt-2 text-2xl font-bold text-gray-900">{book.title}</h1>
-            <p className="mt-4 text-xl font-semibold text-gray-800">{book.price}</p>
-            <div className="mt-4 space-y-1 text-sm text-gray-700">
-              <p><span className="font-semibold">Author:</span> {book.author}</p>
-              {book.publisher && <p><span className="font-semibold">Publisher:</span> {book.publisher}</p>}
-              {book.language && <p><span className="font-semibold">Language:</span> {book.language}</p>}
-              {book.format && <p><span className="font-semibold">Format:</span> {book.format}</p>}
-              {book.pages && <p><span className="font-semibold">Pages:</span> {book.pages}</p>}
-              {book.isbn && <p><span className="font-semibold">ISBN:</span> {book.isbn}</p>}
-              {book.edition && <p><span className="font-semibold">Edition:</span> {book.edition}</p>}
-            </div>
-
-            {book.description && <p className="mt-4 text-gray-600">{book.description}</p>}
-            <div className="mt-6 flex gap-3 mb-4">
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                disabled={isAdded}
-                className={`rounded px-4 py-2 text-white ${isAdded ? "bg-gray-500" : "bg-green-600 hover:bg-green-700"}`}
-              >
-                {isAdded ? "Added to Cart" : "Add to Cart"}
-              </button>
-              <Link to={backPath} className="inline-block rounded bg-orange-500 px-4 py-2 text-white">
-                Back
-              </Link>
-            </div>
+          <div className="flex flex-col p-6 sm:p-10 lg:p-12">
+            <span className="w-fit rounded-full bg-orange-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-600">{book.category}</span>
+            <h1 className="mt-4 text-3xl font-black leading-tight tracking-tight text-slate-900 sm:text-4xl">{book.title}</h1>
+            <p className="mt-2 text-sm text-slate-500">by <span className="font-semibold text-slate-700">{book.author}</span></p>
+            <p className="mt-6 text-3xl font-black text-slate-900">{book.price}</p>
+            {book.description ? <p className="mt-6 leading-7 text-slate-600">{book.description}</p> : null}
+            <dl className="mt-7 grid grid-cols-2 gap-x-5 gap-y-4 border-y border-slate-100 py-6">{details.map(([label, value]) => <div key={label}><dt className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</dt><dd className="mt-1 text-sm font-semibold text-slate-700">{value}</dd></div>)}</dl>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row"><button type="button" onClick={handleAddToCart} disabled={isAdded} className={`flex-1 rounded-full px-6 py-3.5 text-sm font-bold text-white transition ${isAdded ? "bg-emerald-600" : "bg-orange-500 hover:bg-orange-600"}`}>{isAdded ? "✓ Added to cart" : "Add to cart"}</button><Link to="/cart" className="rounded-full border border-slate-200 px-6 py-3.5 text-center text-sm font-bold text-slate-700 hover:bg-slate-50">View cart</Link></div>
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-slate-400"><span>✓ Secure checkout</span><span>✓ Saved delivery address</span><span>✓ Easy ordering</span></div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

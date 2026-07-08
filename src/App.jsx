@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import Navbar from "./commponents/Navbar";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./commponents/HomePage";
 import CoursePage from "./commponents/CoursePage";
 import AboutPage from "./commponents/AboutPage";
-import ProfilePage from "./commponents/ProfilePage";
 import ContactPage from "./commponents/ContactPage";
 import BookDetailsPage from "./commponents/BookDetailsPage";
 import CartPage from "./commponents/CartPage";
 import AccountPage from "./commponents/AccountPage";
 import LoginPage from "./commponents/LoginPage";
 import AddressPage from "./commponents/AddressPage";
+import Footer from "./commponents/Footer";
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,7 +22,8 @@ const App = () => {
         <Route path="/" element={<HomePage searchQuery={searchQuery} />} />
         <Route path="/course" element={<CoursePage searchQuery={searchQuery} />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile" element={<Navigate to="/account" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/book/:bookId" element={<BookDetailsPage />} />
         <Route path="/cart" element={<CartPage/>}/>
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/address" element={<AddressPage/>} />
         <Route path="/login" element={<LoginPage/>} />
       </Routes>
+      <Footer />
     </>
   );
 };
